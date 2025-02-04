@@ -350,11 +350,11 @@ $$
 \begin{aligned}
 \psi &= \arg \min_{\psi} KL(q_{\psi}(\theta) |
 \frac{1}{Z} p_0(\theta) p(D|\theta)) \\
-&= \arg \min_{\psi} L^\text{ELBO}(\psi) + \text{const} \\
+&= \arg \max_{\psi} L^\text{ELBO}(\psi) + \text{const} \\
 L^\text{ELBO}(\psi) &=
 \underbrace{E_{\theta \sim q_{\psi}}
-[-\log p(D|\theta)]}_\text{E[NLL]}
-+
+[\log p(D|\theta)]}_\text{ELL}
+-
 \underbrace{KL(q_\psi | p_0)}_\text{regularizer}
 \end{aligned}
 $$
@@ -364,7 +364,7 @@ Online version
 $$
 \begin{aligned}
 \psi_t
-&= \arg \min_{\psi} L_t^\text{ELBO}(\psi) \\
+&= \arg \max_{\psi} L_t^\text{ELBO}(\psi) \\
 L_t^\text{ELBO}(\psi) &=
 \underbrace{E_{\theta \sim q_{\psi}}
 [-\log p(y_t|h_t(\theta_t))]}_\text{incremental E[NLL]}
