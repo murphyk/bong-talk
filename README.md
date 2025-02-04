@@ -1,5 +1,7 @@
 # BONG: Bayesian Online Natural Gradient
 
+https://arxiv.org/abs/2405.19681
+
 ## Run locally
 To start the slide show:
 

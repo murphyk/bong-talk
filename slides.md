@@ -9,7 +9,7 @@ mdc: true
 
 # Algorithms and Applications for Sequential Decision Making
 
-February 2025
+3 February 2025
 
 Kevin Murphy (Google DeepMind)
 
@@ -115,27 +115,34 @@ where $\theta_t$ summarizes $D_{1:t-1}$.
 One step ahead  predictive distribution (for unknown $y_t$)
 $$
 \begin{aligned}
+\underbrace{p(\theta_t|D_{1:t-1})}_\text{param. predictive}
+ &= \int \underbrace{p(\theta_t|\theta_{t-1})}_\text{dynamics}
+ \underbrace{p(\theta_{t-1}|D_{1:t-1})}_\text{previous posterior}
+ d\theta_{t-1}
+\\
 \underbrace{p(y_t|x_t, D_{1:t-1})}_\text{obs. predictive}
 &=
      \int
     \underbrace{p(y_t | \theta_t, x_{t})}_\text{likelihood}
     \underbrace{p(\theta_t |D_{1:t-1})}_\text{param. predictive}
     d\theta_t
-\\
-\underbrace{p(\theta_t|D_{1:t-1})}_\text{param. predictive}
- &= \int \underbrace{p(\theta_t|\theta_{t-1})}_\text{dynamics}
- \underbrace{p(\theta_{t-1}|D_{1:t-1})}_\text{previous posterior}
- d\theta_{t-1}
-     \end{aligned}
+    \end{aligned}
 $$
 
 
 New posterior (after seeing $y_t$):
 $$
-\underbrace{p(\theta_t|D_{1:t})}_\text{posterior}
-\propto
-\underbrace{p(y_t|\theta_t,x_t)}_\text{likelihood}
-\underbrace{p(\theta_t|D_{1:t-1})}_\text{prior}
+\begin{aligned}
+\overbrace{p(\theta_t|D_{1:t})}^\text{posterior}
+&=
+p(\theta_t|x_t,y_t,D_{1:t-1})
+=\frac{
+\overbrace{p(y_t|\theta_t,x_t)}^\text{likelihood}
+\overbrace{p(\theta_t|D_{1:t-1})}^\text{prior}}
+{p(y_t|x_t,D_{1:t-1})} \\
+\overbrace{p(y_t|x_t,D_{1:t-1})}^\text{marg. likelihood} &=
+\int p(y_t|\theta_t,x_t) p(\theta_t|D_{1:t-1}) d\theta_t
+\end{aligned}
 $$
 
 
@@ -343,21 +350,22 @@ $$
 \begin{aligned}
 \psi &= \arg \min_{\psi} KL(q_{\psi}(\theta) |
 \frac{1}{Z} p_0(\theta) p(D|\theta)) \\
-&= \arg \min_{\psi} L(\psi) + \text{const} \\
-L(\psi) &=
+&= \arg \min_{\psi} L^\text{ELBO}(\psi) + \text{const} \\
+L^\text{ELBO}(\psi) &=
 \underbrace{E_{\theta \sim q_{\psi}}
 [-\log p(D|\theta)]}_\text{E[NLL]}
 +
 \underbrace{KL(q_\psi | p_0)}_\text{regularizer}
 \end{aligned}
 $$
+where $L^\text{ELBO}$ is evidence lower bound.
 
 Online version
 $$
 \begin{aligned}
 \psi_t
-&= \arg \min_{\psi} L_t(\psi) \\
-L_t(\psi) &=
+&= \arg \min_{\psi} L_t^\text{ELBO}(\psi) \\
+L_t^\text{ELBO}(\psi) &=
 \underbrace{E_{\theta \sim q_{\psi}}
 [-\log p(y_t|h_t(\theta_t))]}_\text{incremental E[NLL]}
 +
@@ -366,87 +374,6 @@ regularizer}
 \end{aligned}
 $$
 
----
-
-## Exponential family distributions
-
-We will consider exponential family variational posteriors with
-natural parameters $\psi$,
-dual (moment) parameters $\rho$,
-sufficient statistics $T(\theta)$,
-and log-partition function $\Phi(\psi)$:
-$$
-\begin{aligned}
-q_{\psi}(\psi) &= \exp(\psi^\intercal T(\theta) - \Phi(\psi)) \\
-\rho &= E_{\theta \sim q_{\psi}}[T(\theta)]
-= \nabla_{\psi} \Phi(\psi)
-\end{aligned}
-$$
-
-Example: Gaussian distribution
-$$
-\begin{aligned}
-\psi_t^{(1)} &= \Sigma_t^{-1} \mu_t \\
-\psi_t^{(2)} &= -\frac{1}{2} \Sigma_t^{-1} \\
-\rho_t^{(1)} &= \mu_t \\
-\rho_t^{(2)} &= \mu_t \mu_t^\intercal + \Sigma_t
-\end{aligned}
-$$
-
----
-
-## Natural Gradient Descent
-
-NGD = preconditioned gradient descent
-$$
-\begin{aligned}
-\psi &:=
-\psi + \alpha F_{\psi}^{-1} \nabla_{\psi} L(\psi) 
-\end{aligned}
-$$
-where $F$ is the Fisher information matrix.
-
-For exponential families, we have
-$$
-\begin{aligned}
-F_{\psi} &= \frac{\partial \rho}{\partial \psi}
-F_{\psi}^{-1} \nabla_{\psi} L(\psi)
- &= \nabla_{\rho} L(\rho)
-\end{aligned}
-$$
-
----
-
-## Prior work: BLR and BBB
-
-Bayesian Learning Rule (Khan and Rue, 2023) uses multiple iterations
-of natural gradient descent (NGD) on the VI objective
-(Evidence Lower Bound).
-In the online setting, we get the following
-iterative update at each step $t$:
-$$
-\begin{aligned}
-\psi_{t,i} &=
-\psi_{t,i-1} + \alpha F_{\psi_{t|t-1}}^{-1}
-\nabla_{\psi_{t,i-1}} L_t(\psi_{t,i-1}) \\
-&= \psi_{t,i-1} + \alpha 
-\nabla_{\rho_{t,i-1}} L_t(\psi_{t,i-1}) \\
- L_t(\psi_{t,i}) &=
-    E_{q_{\psi_{t,i}}}[
-    \log p(y_{t} \vert h_{t}(\theta_{t}))]
-    -KL(q_{\psi_{t,i}} | q_{\psi_{t \vert t-1}})
-\end{aligned}
-$$
-
-Bayes By Backprop (Blundell et al, 2015)
-is similar to BLR but uses GD, not NGD.
-$$
-\begin{aligned}
-\psi_{t,i} &=
-\psi_{t,i-1} + \alpha 
-\nabla_{\psi_{t,i-1}} L_t(\psi_{t,i-1}) 
-\end{aligned}
-$$
 
 ---
 
@@ -462,7 +389,7 @@ NeurIPS 2024.
     COLLAS 2023.
 
 Contributions:
-- C1. Simplified one-step version of BLR.
+- C1. Simplified one-step version of Bayesian Learning Rule (Khan and Rue, 2023).
 - C2. Faster (deterministic) way to compute (the gradient of) the objective.
 - C3. Faster diagonal plus low-rank (DLR) variational posterior (LOFI).
 - C4. Unifying framework (and experimental comparison)
@@ -470,56 +397,79 @@ Contributions:
 
 ---
 
-## C1. Single step update
+## C1. From BLR to BONG
 
-
-In the BLR, if
-we initialize with $\psi_{t,0}=\psi_{t|t-1}$,
-then the KL term vanishes,
-but we still have  implicit regularization due to initialization.
-
+BLR uses multiple iterations
+of natural gradient ascent (NGD)  on the ELBO:
 $$
 \begin{aligned}
- L_t(\psi_{t,i}) &=
+\psi_{t,i} &=
+\psi_{t,i-1} + \alpha F_{\psi_{t|t-1}}^{-1}
+\nabla_{\psi_{t,i-1}} L_t^\text{ELBO}(\psi_{t,i-1}) \\
+&= \psi_{t,i-1} + \alpha 
+\nabla_{\rho_{t,i-1}} L_t^\text{ELBO}(\psi_{t,i-1}) \\
+ L_t^\text{ELBO}(\psi_{t,i}) &=
     E_{q_{\psi_{t,i}}}[
     \log p(y_{t} \vert h_{t}(\theta_{t}))]
-    -\cancel{KL(q_{\psi_{t,i}} | q_{\psi_{t \vert t-1}})}
+    -KL(q_{\psi_{t,i}} | q_{\psi_{t \vert t-1}})
+\end{aligned}
+$$
+where $\psi$ are natural parameters and $\rho$
+are moment parameters.
+(Recall that
+$F_{\psi}^{-1} \nabla_{\psi} L(\psi) = \nabla_{\rho} L(\rho)$.)
+
+
+In BONG,
+we initialize with $\psi_{t,0}=\psi_{t|t-1}$,
+and just do one step,
+so  the KL term vanishes,
+but we still have  implicit regularization due to initialization
+at prior:
+$$
+\begin{aligned}
+ L_t^\text{ELL}(\psi_{t}) &=
+    E_{q_{\psi_{t}}}[
+    \log p(y_{t} \vert h_{t}(\theta_{t}))]
+    -\cancel{KL(q_{\psi_{t}} | q_{\psi_{t \vert t-1}})}
 \end{aligned}
 $$
 
-In BONG, we therefore just take one step update of
-$$
-\begin{aligned}
- L_t(\psi_{t}) &=
-    E_{q_{\psi_{t}}}[
-    \log p(y_{t} \vert h_{t}(\theta_{t}))]
-\end{aligned}
-$$
 
 Theorem: This is exact in the conjugate case
 (eg. Gaussian prior, linear Gaussian likelihood).
 
 ---
 
-## BLR vs BONG
+## BONG vs BLR
 
 ![blr](./figs/blr-bong-cartoon2.png){style="max-width: 50%"}
 
 ---
 
-## 4 update rules
+## BONG vs BBB
 
-
-- (NGD or GD) x (Implicit reg. or KL reg)
-
+Bayes By Backprop (Blundell et al, 2015)
+is similar to BLR
+but uses GD (not NGD) on the ELBO objective:
 $$
-\begin{array}{lll} \hline
-{\rm Name} & {\rm Loss} & {\rm Update} \\
-{\rm BONG} & {\rm E[NLL]} & {\rm NGD} (I=1) \\
-{\rm BOG} & {\rm E[NLL]} & {\rm GD} (I=1) \\	
-{\rm BLR} & {\rm ELBO} & {\rm NGD (I>1)} \\
-{\rm BBB} & {\rm ELBO} & {\rm GD} (I>1) \\	
-\end{array}
+\begin{aligned}
+\psi_{t,i} &=
+\psi_{t,i-1} + \alpha 
+\nabla_{\psi_{t,i-1}} L_t^\text{ELBO}(\psi_{t,i-1}) 
+\end{aligned}
+$$
+
+By contrast, BONG uses NGD and ELL objective.
+
+We also define "BOG" (Bayesian Online Gradient)
+variant of BONG which uses GD (not NGD) on E[LL] objective.
+$$
+\begin{aligned}
+\psi_{t,i} &=
+\psi_{t,i-1} + \alpha 
+\nabla_{\psi_{t,i-1}} L_t^\text{ELL}(\psi_{t,i-1}) 
+\end{aligned}
 $$
 
 ---
@@ -620,12 +570,24 @@ $$
 
 ---
 
-## C3. LOFI: DLR variational posterior
+## Combining the pieces
+
+- 4 updates: (NGD,ELBO)=BLR, (NGD,ELL)=BONG, (GD,ELBO)=BBB, (GD,ELL)=BOG
+- 4 gradient/Hessian approximations: MC-HESS, LIN-HESS, MC-EF, LIN-EF
+- 16 combinations, but we rule out MC-HESS as too slow
+
+![tab](./figs/bong-table-small.png){style="max-width: 10%"}
+
+---
+
+## C3. Efficient variational family
 
 We use a Gaussian variational family
 $$
 q_{\psi_t}(\theta_t) = N(\theta_t | \mu_t, \Sigma_t)
 $$
+
+We parameterize the precision matrix as diagonal plus low rank
 
 |Name|Form|Complexity|
 |----|----|----------|
@@ -635,22 +597,23 @@ Diagonal+low rank (DLR) | $(\mu,({\rm diag}(\Upsilon)+W W^{\intercal})^{-1})$ | 
 
 ---
 
-## LOFI in pictures
+## LOFI (Low-Rank Filtering)
 
 EKF Predict-Update, then SVD projection.
+(c.f. Assumed Density Filtering)
 
 ![predict-update](./figs/predict-update-project.png){style="max-width: 50%"}
 
 ---
 
-## LOFI predict
+## LOFI predict step
 
 
 ![lofi-predict](./figs/LOFI-predict.png){style="max-width: 60%"}
 
 ---
 
-## LOFI update
+## LOFI update step
 
 ![lofi-update](./figs/LOFI-update.png){style="max-width: 60%"}
 

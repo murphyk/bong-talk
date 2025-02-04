@@ -1,4 +1,104 @@
+---
 
+## Exponential family distributions
+
+We will consider exponential family variational posteriors with
+natural parameters $\psi$,
+dual (moment) parameters $\rho$,
+sufficient statistics $T(\theta)$,
+and log-partition function $\Phi(\psi)$:
+$$
+\begin{aligned}
+q_{\psi}(\psi) &= \exp(\psi^\intercal T(\theta) - \Phi(\psi)) \\
+\rho &= E_{\theta \sim q_{\psi}}[T(\theta)]
+= \nabla_{\psi} \Phi(\psi)
+\end{aligned}
+$$
+
+Example: Gaussian distribution
+$$
+\begin{aligned}
+\psi_t^{(1)} &= \Sigma_t^{-1} \mu_t \\
+\psi_t^{(2)} &= -\frac{1}{2} \Sigma_t^{-1} \\
+\rho_t^{(1)} &= \mu_t \\
+\rho_t^{(2)} &= \mu_t \mu_t^\intercal + \Sigma_t
+\end{aligned}
+$$
+
+---
+
+## Natural Gradient Descent
+
+NGD = preconditioned gradient descent
+$$
+\begin{aligned}
+\psi &:=
+\psi + \alpha F_{\psi}^{-1} \nabla_{\psi} L(\psi) 
+\end{aligned}
+$$
+where $F$ is the Fisher information matrix.
+
+For exponential families, we have
+$$
+\begin{aligned}
+F_{\psi} &= \frac{\partial \rho}{\partial \psi} \\
+F_{\psi}^{-1} \nabla_{\psi} L(\psi)
+ &= \nabla_{\rho} L(\rho)
+\end{aligned}
+$$
+
+
+---
+
+## Prior work: BLR and BBB
+
+Bayesian Learning Rule (Khan and Rue, 2023) uses multiple iterations
+of natural gradient descent (NGD) on the VI objective
+(Evidence Lower Bound).
+In the online setting, we get the following
+iterative update at each step $t$:
+$$
+\begin{aligned}
+\psi_{t,i} &=
+\psi_{t,i-1} + \alpha F_{\psi_{t|t-1}}^{-1}
+\nabla_{\psi_{t,i-1}} L_t(\psi_{t,i-1}) \\
+&= \psi_{t,i-1} + \alpha 
+\nabla_{\rho_{t,i-1}} L_t(\psi_{t,i-1}) \\
+ L_t(\psi_{t,i}) &=
+    E_{q_{\psi_{t,i}}}[
+    \log p(y_{t} \vert h_{t}(\theta_{t}))]
+    -KL(q_{\psi_{t,i}} | q_{\psi_{t \vert t-1}})
+\end{aligned}
+$$
+
+Bayes By Backprop (Blundell et al, 2015)
+is similar to BLR but uses GD, not NGD.
+$$
+\begin{aligned}
+\psi_{t,i} &=
+\psi_{t,i-1} + \alpha 
+\nabla_{\psi_{t,i-1}} L_t(\psi_{t,i-1}) 
+\end{aligned}
+$$
+
+---
+
+---
+
+## 4 update rules
+
+
+- (NGD or GD) x (Implicit reg. or KL reg)
+
+$$
+\begin{array}{lll} \hline
+{\rm Name} & {\rm Loss} & {\rm Update} \\
+{\rm BONG} & {\rm E[NLL]} & {\rm NGD} (I=1) \\
+{\rm BOG} & {\rm E[NLL]} & {\rm GD} (I=1) \\	
+{\rm BLR} & {\rm ELBO} & {\rm NGD (I>1)} \\
+{\rm BBB} & {\rm ELBO} & {\rm GD} (I>1) \\	
+\end{array}
+$$
 
 <!---
 ---
