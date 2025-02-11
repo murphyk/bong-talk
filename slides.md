@@ -1,21 +1,20 @@
 ---
+theme: academic
 layout: cover
 # background: ./images/bone-wall.png
 class: text-center
 title: BONG
 mdc: true
+coverDate: 2025/02/03
 ---
 
 
 # Algorithms and Applications for Sequential Decision Making
 
-3 February 2025
-
 Kevin Murphy (Google DeepMind)
 
 Joint work with: Gerardo Duran-Martin (QMU), Alexander Shestopaloff (QMU),
 Leandro Sánchez-Betancourt (OMI), Peter Chang (MIT), Matt Jones (U. Colorado)
-
 
 
 ---
@@ -52,11 +51,8 @@ the expected sum of losses, $\sum_t E[\ell_t]$.
 ## Example: Sequential binary classification
 
 
-<!--
-![sequential-moons](./figs/sequential-moons.gif)
--->
+![moons-snapshot](./figs/moons-snapshot-gerardo.png){.centered}
 
-![moons-snapshot](./figs/moons-snapshot-gerardo.png)
 
 ---
 
@@ -104,7 +100,7 @@ Use parametric model $p(y_t|x_t,\theta_t)$
 where $\theta_t$ summarizes $D_{1:t-1}$.
 
 
-![linreg](./figs/SSM.png){style="max-width: 50%"}
+![linreg](./figs/SSM.png){style="max-width: 50%" .horizontal-center}
 
 
 ---
@@ -298,7 +294,7 @@ $$
 
 
 
-![kf-tracking-eqns](./figs/SSM-eqns-2d-tracking.png){style="max-width: 70%"}
+![kf-tracking-eqns](./figs/SSM-eqns-2d-tracking.png){style="max-width: 70%" .centered}
 
 
 ---
@@ -311,7 +307,7 @@ $y_t \sim N(\cdot|\theta^{1:2}, \sigma^2 I)$.
 Plot $y_t$ and $p(\theta^{1:2}|y_{1:t})$ for each step $t$.
 
 
-![kf-tracking](./figs/KF-2d-tracking.png){style="max-width: 30%"}
+![kf-tracking](./figs/KF-2d-tracking.png){style="max-width: 30%" .centered}
 
 
 
@@ -325,20 +321,7 @@ Left: Plot $E[\theta^{1:2}|y_{1:t}]$ vs $t$.
 Right: Plot $\sqrt{\frac{1}{t} \sum_{i=1}^t (\hat{y}_{i|1:i-1} - y_i)^2}$ vs $t$
 
 
-::div{style="position: absolute; bottom: 0; width: 100%; text-align: center;"}
-<img src="./figs/KF-ridge-gerardo.png" alt="Figure Caption" style="width: 50%;">
-:::
-
-<!--
-<div style="position: absolute; bottom: 0; width: 100%; text-align: center;">
-  <img src="./figs/KF-ridge-gerardo.png"
-  alt="Figure Caption" style="max-width: 60%;">
-</div>
--->
-
-<!--
-![kf-linreg](./figs/KF-ridge-gerardo.png){style="max-width: 50%"}
--->
+![kf-linreg](./figs/KF-ridge-gerardo.png){style="max-width: 70%" .horizontal-center}
 
 ---
 
@@ -443,7 +426,7 @@ Theorem: This is exact in the conjugate case
 
 ## BONG vs BLR
 
-![blr](./figs/blr-bong-cartoon2.png){style="max-width: 50%"}
+![blr](./figs/blr-bong-cartoon2.png){style="max-width: 50%" .centered}
 
 ---
 
@@ -576,7 +559,7 @@ $$
 - 4 gradient/Hessian approximations: MC-HESS, LIN-HESS, MC-EF, LIN-EF
 - 16 combinations, but we rule out MC-HESS as too slow
 
-![tab](./figs/bong-table-small.png){style="max-width: 10%"}
+![tab](./figs/bong-table-small.png){style="max-width: 20%" .horizontal-center}
 
 ---
 
@@ -602,20 +585,22 @@ Diagonal+low rank (DLR) | $(\mu,({\rm diag}(\Upsilon)+W W^{\intercal})^{-1})$ | 
 EKF Predict-Update, then SVD projection.
 (c.f. Assumed Density Filtering)
 
-![predict-update](./figs/predict-update-project.png){style="max-width: 50%"}
+![predict-update](./figs/predict-update-project.png){style="max-width: 50%" .horizontal-center}
 
+---
+layout: two-cols
 ---
 
 ## LOFI predict step
 
 
-![lofi-predict](./figs/LOFI-predict.png){style="max-width: 60%"}
+![lofi-predict](./figs/LOFI-predict.png){}
 
----
+::right::
 
 ## LOFI update step
 
-![lofi-update](./figs/LOFI-update.png){style="max-width: 60%"}
+![lofi-update](./figs/LOFI-update.png){}
 
 
 
@@ -645,7 +630,7 @@ EKF Predict-Update, then SVD projection.
 
 ## Sample efficiency: Misclassification vs sample size (MNIST)
 
-![miscl](./figs/linmc_miscl_all.png){style="max-width: 50%"}
+![miscl](./figs/linmc_miscl_all.png){style="max-width: 50%" .horizontal-center}
 
 ---
 
@@ -653,14 +638,14 @@ EKF Predict-Update, then SVD projection.
 
 Expected calibration error
 
-![ece](./figs/ece_dlr_boxplot.png){style="max-width: 75%"}
+![ece](./figs/ece_dlr_boxplot.png){style="max-width: 75%" .horizontal-center}
 
 
 ----
 
 ## Application:  multi-armed bandits
 
-![bandits](./figs/bandit-octopus.png){style="max-width: 20%"}
+![bandits](./figs/bandit-octopus.png){style="max-width: 30%"}
 
 ----
 
@@ -709,7 +694,7 @@ BayesOpt | -  | Parameters $\theta \in R^D$ | Objective fn.
 Need to try new actions (explore) to learn about their effects
 before exploiting the best action.
 
-![explore-exploit](./figs/explore-exploit.png){style="max-width: 25%"}
+![explore-exploit](./figs/explore-exploit.png){style="max-width: 30%"}
 
 ---
 zoom: 0.8
@@ -726,7 +711,7 @@ $$
 \end{aligned}
 $$
 
-![UCB](./figs/UCB.png){style="max-width: 50%"}
+![UCB](./figs/UCB.png){style="max-width: 50%" .horizontal-center}
 
 ----
 
@@ -765,12 +750,16 @@ $$
 
 ----
 
-## Contextual bandit shootout (MNIST)
+## Contextual bandit shootout (MNIST)<sup>1</sup>
 
-![bandits](./figs/mnist-bandits.png){style="max-width: 50%"}
+![bandits](./figs/mnist-bandits.png){style="max-width: 70%" .horizontal-center}
 
-``Efficient Online Bayesian Inference for Neural Bandits''.
-  Gerardo Duran-Martin, Aleyna Kara, Kevin Murphy. AISTATS 2022.
+<Footnotes separator x>
+    <Footnote :number=1> 
+    "Efficient Online Bayesian Inference for Neural Bandits".  Gerardo Duran-Martin, Aleyna Kara, Kevin Murphy. AISTATS 2022.
+    </Footnote>
+</Footnotes>
+
 
 
 
@@ -795,7 +784,7 @@ When more data does not lead to better performance.
 
 ## The full dataset (without knowledge of the task boundaries)
 
-![non-stationary-moons-full](./figs/moons-dataset-full.png){style="max-width: 50%"}
+![non-stationary-moons-full](./figs/moons-dataset-full.png){style="max-width: 50%" .horizontal-center}
 
 ---
 
@@ -805,11 +794,7 @@ When more data does not lead to better performance.
 
 ---
 
-## BONE
-
-- "BONE: (B)ayesian (O)nline learning in (N)on-stationary (E)nvironments".
-Gerardo Duran-Martin, Leandro Sánchez-Betancourt, Alexander Shestopaloff, and Kevin Murphy.
-Arxiv, 2024.
+## BONE<sup>1</sup>
 
 - Hierarchical Bayesian model that allows $\theta_t$ to drift
 slowly within a "regime" (DGP $p(y_t|\theta_t, x_t)$),
@@ -821,6 +806,15 @@ to a new "regime" (different DGP $p'(y_t|\theta_t, x_t)$)
 
 - Subsumes prior work on changepoint models, etc.
 
+<Footnotes separator x>
+    <Footnote :number=1>
+    "BONE: (B)ayesian (O)nline learning in (N)on-stationary (E)nvironments".
+    Gerardo Duran-Martin, Leandro Sánchez-Betancourt, Alexander Shestopaloff, and Kevin Murphy.
+    Arxiv, 2024.
+    </Footnote>
+</Footnotes>
+
+
 ---
 
 ## Hierarchical Bayesian model
@@ -828,7 +822,7 @@ to a new "regime" (different DGP $p'(y_t|\theta_t, x_t)$)
 
 Switching State Space Model (SSM).
 
-![sssm](./figs/switching-SSM.png){style="max-width: 30%"}
+![sssm](./figs/switching-SSM.png){style="max-width: 30%" .horizontal-center}
 
 ---
 
